@@ -114,6 +114,8 @@ namespace MC_SDK.Croe
         delegate IntPtr ForwardMsg(IntPtr ptr);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate bool UploadGraffiti(IntPtr list, float penSize, int picWidth, int picHeight, [MarshalAs(UnmanagedType.LPStr)] ref string retHash, [MarshalAs(UnmanagedType.LPStr)] ref string returl);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void TXT2Audio(string txt, ref IntPtr ptr);
         /// <summary>
         /// 输出日志
         /// </summary>
@@ -714,6 +716,22 @@ namespace MC_SDK.Croe
             string ret = Marshal.PtrToStringAnsi(sendmsg(audiohash, token, waittime));
             sendmsg = null;
             return ret;
+        }
+        /// <summary>
+        /// 文本转语音
+        /// </summary>
+        /// <param name="txt"></param>
+        /// <returns></returns>
+        public byte[] TXT2Audio_(string txt)
+        {
+            IntPtr ptr = Marshal.AllocHGlobal(4);
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("文本转语音").ToString());
+            TXT2Audio sendmsg = (TXT2Audio)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(TXT2Audio));
+            sendmsg(txt, ref ptr);
+            Struct_EArray_byte ret = (Struct_EArray_byte)Marshal.PtrToStructure(ptr, typeof(Struct_EArray_byte));
+            Array.Resize(ref ret.bytes, ret.count);
+            sendmsg = null;
+            return ret.bytes;
         }
         /// <summary>
         /// 设置在线状态

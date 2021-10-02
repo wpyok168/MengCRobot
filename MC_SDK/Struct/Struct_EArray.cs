@@ -23,12 +23,4 @@ namespace MC_SDK.Struct
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024*10)]
         public byte[] bytes;
     }
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Struct_EArray_S
-    {
-        public IntPtr ptr;
-        public int count;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-        public IntPtr[] ptrs;
-    }
 }
