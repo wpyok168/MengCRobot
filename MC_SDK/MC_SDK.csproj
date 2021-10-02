@@ -56,14 +56,18 @@
   <ItemGroup>
     <Compile Include="Common.cs" />
     <Compile Include="Croe\API.cs" />
+    <Compile Include="Croe\GetPtr.cs" />
+    <Compile Include="Croe\TextFormat.cs" />
     <Compile Include="Enum\AuthorityEnum.cs" />
     <Compile Include="Enum\EventProcessEnum.cs" />
     <Compile Include="Enum\EventTypeEnum.cs" />
     <Compile Include="Enum\MsgTypeEnum.cs" />
+    <Compile Include="Enum\MusicShareTypeEnum.cs" />
     <Compile Include="Enum\OlineStatusTypeEnum.cs" />
     <Compile Include="Enum\OperationTypeEnum.cs" />
     <Compile Include="Enum\ServiceCodeEnum.cs" />
     <Compile Include="Enum\SexEnum.cs" />
+    <Compile Include="Enum\ShowPicEnum.cs" />
     <Compile Include="Enum\SubTempMsgTypeEnum.cs" />
     <Compile Include="Interface\IDisable.cs" />
     <Compile Include="Interface\IEnable.cs" />
@@ -77,11 +81,13 @@
     <Compile Include="Mode\GroupMsg.cs" />
     <Compile Include="Mode\PrivateMsg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Struct\Struct_Draw.cs" />
     <Compile Include="Struct\Struct_EArray.cs" />
     <Compile Include="Struct\Struct_Friend_Msg.cs" />
     <Compile Include="Struct\Struct_GroupInfo.cs" />
     <Compile Include="Struct\Struct_GroupMemberInfo.cs" />
     <Compile Include="Struct\Struct_Group_Msg.cs" />
+    <Compile Include="Struct\Struct_Other_Msg.cs" />
     <Compile Include="Struct\Struct_Pskey.cs" />
     <Compile Include="Struct\Struct_Service_Info.cs" />
   </ItemGroup>

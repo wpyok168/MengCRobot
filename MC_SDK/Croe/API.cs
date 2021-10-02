@@ -86,7 +86,34 @@ namespace MC_SDK.Croe
         delegate void PushGroupMsg(Struct_Group_Msg_PA[] msg);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void PushFriendMsg(Struct_Friend_Msg_PA[] msg);
-
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void PushOtherMsg(Struct_Other_Msg_PA[] msg);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool IsOpenQQConsult([MarshalAs(UnmanagedType.LPStr)] string hisUin);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate IntPtr WithdrawGroupMsg(long QQ, long fromReq, long fromRandom);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate IntPtr WithdrawFriendMsg(long QQ, long fromReq, long fromRandom, long fromTime);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate IntPtr ShareMusic(int type, long obj, [MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string author, [MarshalAs(UnmanagedType.LPStr)] string jmpurl, [MarshalAs(UnmanagedType.LPStr)] string pic, [MarshalAs(UnmanagedType.LPStr)] string audiourl, [MarshalAs(UnmanagedType.LPStr)] string appname);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void CallFriendTelPhone(long QQ);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void RejectTelPhone(long QQ, long longtoken);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void AcceptTelPhone([MarshalAs(UnmanagedType.LPStr)] string ip, int port, long longtoken, [MarshalAs(UnmanagedType.LPStr)] string token);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate int SetGroupMemberName(long QQ, long otherQQ, [MarshalAs(UnmanagedType.LPStr)] string name);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate int UploadAvatar([MarshalAs(UnmanagedType.LPArray)] byte[] pic, int picsize);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool ModifyInfo([MarshalAs(UnmanagedType.LPStr)] string name, int sex, int year, int month, int day, int job, [MarshalAs(UnmanagedType.LPStr)] string company, [MarshalAs(UnmanagedType.LPStr)] string school, [MarshalAs(UnmanagedType.LPStr)] string province1, [MarshalAs(UnmanagedType.LPStr)] string cityindex1, [MarshalAs(UnmanagedType.LPStr)] string province2, [MarshalAs(UnmanagedType.LPStr)] string cityindex2, [MarshalAs(UnmanagedType.LPStr)] string mail, [MarshalAs(UnmanagedType.LPStr)] string desc);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool Poke(long otherQQ, long GroupQQ);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate IntPtr ForwardMsg(IntPtr ptr);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool UploadGraffiti(IntPtr list, float penSize, int picWidth, int picHeight, [MarshalAs(UnmanagedType.LPStr)] ref string retHash, [MarshalAs(UnmanagedType.LPStr)] ref string returl);
         /// <summary>
         /// 输出日志
         /// </summary>
@@ -727,9 +754,257 @@ namespace MC_SDK.Croe
             sendmsg(sgmp);
             sendmsg = null;
         }
-
-
-
+        /// <summary>
+        /// 推送事件消息
+        /// </summary>
+        /// <param name="msg"></param>
+        public void PushOtherMsg_(Struct_Other_Msg msg)
+        {
+            Struct_Other_Msg_PA[] sgmp = new Struct_Other_Msg_PA[1];
+            sgmp[0].sogp = msg;
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("推送事件消息").ToString());
+            PushOtherMsg sendmsg = (PushOtherMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(PushOtherMsg));
+            sendmsg(sgmp);
+            sendmsg = null;
+        }
+        /// <summary>
+        /// 是否开通QQ咨
+        /// </summary>
+        /// <param name="hisUin"></param>
+        /// <returns></returns>
+        public bool IsOpenQQConsult_(string hisUin)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("是否开通QQ咨").ToString());
+            IsOpenQQConsult sendmsg = (IsOpenQQConsult)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(IsOpenQQConsult));
+            bool ret = sendmsg(hisUin);
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 撤回群聊消息
+        /// </summary>
+        /// <param name="QQ"></param>
+        /// <param name="fromReq"></param>
+        /// <param name="fromRandom"></param>
+        /// <returns>成功返回code为0，失败返回错误code和msg</returns>
+        public string WithdrawGroupMsg_(long QQ, long fromReq, long fromRandom)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("撤回群聊消息").ToString());
+            WithdrawGroupMsg sendmsg = (WithdrawGroupMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(WithdrawGroupMsg));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(QQ,fromReq, fromRandom));
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 撤回私聊消息
+        /// </summary>
+        /// <param name="QQ"></param>
+        /// <param name="fromReq"></param>
+        /// <param name="fromRandom"></param>
+        /// <returns>成功返回的code为3，参数从发送api返回的json里取</returns>
+        public string WithdrawFriendMsg_(long QQ, long fromReq, long fromRandom)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("撤回私聊消息").ToString());
+            WithdrawFriendMsg sendmsg = (WithdrawFriendMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(WithdrawFriendMsg));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(QQ, fromReq, fromRandom, fromRandom));
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 分享音乐
+        /// </summary>
+        /// <param name="type">分享类型</param>
+        /// <param name="obj">分享对象</param>
+        /// <param name="name">歌曲名</param>
+        /// <param name="author">歌曲作者</param>
+        /// <param name="jmpurl">歌曲跳转地址：点开json卡片后打开的网页</param>
+        /// <param name="pic">歌曲图片：json卡片的那个圆圆的图</param>
+        /// <param name="audiourl">歌曲音频地址：播放的(mp3)音频网络地址</param>
+        /// <param name="appname">分享app包名：默认网易云com.netease.cloudmusic</param>
+        /// <returns></returns>
+        public string ShareMusic_(MusicShareTypeEnum type, long obj, string name, string author, string jmpurl, string pic, string audiourl, string appname="")
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("分享音乐").ToString());
+            ShareMusic sendmsg = (ShareMusic)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(ShareMusic));
+            string ret = Marshal.PtrToStringAnsi(sendmsg((int)type, obj, name, author, jmpurl, pic, audiourl, appname));
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 打好友电话<para>发起语音通话，仅支持QQ列表内的好友。与小栗子的QQ电话不同的是，对方可以正常接通</para>
+        /// </summary>
+        /// <param name="QQ"></param>
+        public void CallFriendTelPhone_(long QQ)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("打好友电话").ToString());
+            CallFriendTelPhone sendmsg = (CallFriendTelPhone)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(CallFriendTelPhone));
+            sendmsg(QQ);
+            sendmsg = null;
+        }
+        /// <summary>
+        /// 拒绝好友电话
+        /// </summary>
+        /// <param name="QQ"></param>
+        /// <param name="longtoken">,longtoken=(.+?)]</param>
+        public void RejectTelPhone_(long QQ, long longtoken)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("拒绝好友电话").ToString());
+            RejectTelPhone sendmsg = (RejectTelPhone)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(RejectTelPhone));
+            sendmsg(QQ, longtoken);
+            sendmsg = null;
+        }
+        /// <summary>
+        /// 接受好友电话
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
+        /// <param name="longtoken"></param>
+        /// <param name="token"></param>
+        public void AcceptTelPhone_(string ip, int port, long longtoken, string token)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("接受好友电话").ToString());
+            AcceptTelPhone sendmsg = (AcceptTelPhone)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(AcceptTelPhone));
+            sendmsg(ip, port, longtoken, token);
+            sendmsg = null;
+        }
+        /// <summary>
+        /// 置群成员专属头衔
+        /// </summary>
+        /// <param name="GroupQQ">群号</param>
+        /// <param name="otherQQ">目标QQ</param>
+        /// <param name="name">头衔 //如果要删除，这里填空</param>
+        /// <returns></returns>
+        public int SetGroupMemberName_(long GroupQQ, long otherQQ, string name)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("置群成员专属头衔").ToString());
+            SetGroupMemberName sendmsg = (SetGroupMemberName)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SetGroupMemberName));
+            int ret = sendmsg(GroupQQ, otherQQ, name);
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 置签名<para>设置自己的个性签名</para>
+        /// </summary>
+        /// <param name="sign">签名</param>
+        /// <returns></returns>
+        public bool SignName_(string sign)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("置签名").ToString());
+            IsOpenQQConsult sendmsg = (IsOpenQQConsult)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(IsOpenQQConsult));
+            bool ret = sendmsg(sign);
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 修改资料<para>修改个人资料,不修改的项请勿传任何参数</para>
+        /// </summary>
+        /// <param name="name">昵称</param>
+        /// <param name="sex">性别</param>
+        /// <param name="year">生日年</param>
+        /// <param name="month">生日月</param>
+        /// <param name="day">生日日</param>
+        /// <param name="job">职业<para>职业列表里第几行</para></param>
+        /// <param name="company">公司</param>
+        /// <param name="school">学校</param>
+        /// <param name="province1">所在地省份<para>北京为1</para></param>
+        /// <param name="cityindex1">所在地城市索引<para>所在地城市索引</para></param>
+        /// <param name="province2">家乡省份</param>
+        /// <param name="cityindex2">家乡城市索引</param>
+        /// <param name="mail">邮箱</param>
+        /// <param name="desc">个人说明</param>
+        /// <returns></returns>
+        public bool ModifyInfo_(string name="", int sex=-1, int year=-1, int month = -1, int day = -1, int job = -1, string company = "", string school = "", string province1 = "", string cityindex1 = "", string province2 = "", string cityindex2 = "", string mail = "", string desc = "")
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("修改资料").ToString());
+            ModifyInfo sendmsg = (ModifyInfo)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(ModifyInfo));
+            bool ret = sendmsg(name, sex, year, month, day, job, company, school, province1, cityindex1, province2, cityindex2, mail, desc);
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 戳一戳
+        /// </summary>
+        /// <param name="otherQQ"></param>
+        /// <param name="GroupQQ">群号：不传递此参数时，为私聊戳一戳</param>
+        /// <returns></returns>
+        public bool Poke_(long otherQQ, long GroupQQ=0)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("戳一戳").ToString());
+            Poke sendmsg = (Poke)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(Poke));
+            bool ret = sendmsg(otherQQ, GroupQQ);
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 设置群昵称
+        /// </summary>
+        /// <param name="GroupQQ">群号</param>
+        /// <param name="otherQQ">对方QQ</param>
+        /// <param name="name">新昵称</param>
+        /// <returns></returns>
+        public int SetGroupName_(long GroupQQ, long otherQQ, string name)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("设置群昵称").ToString());
+            SetGroupMemberName sendmsg = (SetGroupMemberName)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SetGroupMemberName));
+            int ret = sendmsg(GroupQQ, otherQQ, name);
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 合并转发消息
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public string ForwardMsg_(List<Struct_Group_Msg> list)
+        {
+            GetPtr<Struct_Group_Msg> getPtr = new GetPtr<Struct_Group_Msg>();
+            IntPtr[] ptrs = getPtr.GetIntPtrs(list);
+            Struct_EArray eArray = new Struct_EArray() { index = 1, count = list.Count, ptrs = ptrs };
+            Array.Resize(ref eArray.ptrs, 1024*10);
+            IntPtr intPtr = Marshal.AllocHGlobal(Marshal.SizeOf(eArray));
+            Marshal.StructureToPtr(eArray, intPtr, false);
+            IntPtr intPtr1 = Marshal.AllocHGlobal(4);
+            Marshal.StructureToPtr(intPtr, intPtr1, false);
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("合并转发消息").ToString());
+            ForwardMsg sendmsg = (ForwardMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(ForwardMsg));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(intPtr1));
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 上传涂鸦
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="penSize"></param>
+        /// <param name="picWidth"></param>
+        /// <param name="picHeight"></param>
+        /// <param name="retHash"></param>
+        /// <param name="returl"></param>
+        /// <returns></returns>
+        public bool UploadGraffiti_(List<Struct_Draw> list, float penSize, int picWidth, int picHeight, ref string retHash, ref string returl)
+        {
+            List<Struct_Draw_E> listE = new List<Struct_Draw_E>();
+            foreach (var item in list)
+            {
+                IntPtr iptr = Marshal.AllocHGlobal(4);
+                Marshal.StructureToPtr(item.struct_sraw_info, iptr, false);
+                Struct_Draw_E sde = new Struct_Draw_E() { colorHex = item.colorHex, colorType = item.colorType, struct_sraw_info=iptr};
+                listE.Add(sde);
+            }
+            GetPtr<Struct_Draw_E> getPtr = new GetPtr<Struct_Draw_E>();
+            IntPtr[] ptrs = getPtr.GetIntPtrs(listE);
+            Struct_EArray eArray = new Struct_EArray() { index = 1, count = list.Count, ptrs = ptrs };
+            Array.Resize(ref eArray.ptrs, 1024 * 10);
+            IntPtr intPtr = Marshal.AllocHGlobal(Marshal.SizeOf(eArray));
+            Marshal.StructureToPtr(eArray, intPtr, false);
+            IntPtr intPtr1 = Marshal.AllocHGlobal(4);
+            Marshal.StructureToPtr(intPtr, intPtr1, false);
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("上传涂鸦").ToString());
+            UploadGraffiti sendmsg = (UploadGraffiti)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(UploadGraffiti));
+            bool ret = sendmsg(intPtr1, penSize, picWidth, picHeight, ref retHash, ref returl);
+            sendmsg = null;
+            return ret;
+        }
 
 
         /// <summary>
@@ -761,6 +1036,21 @@ namespace MC_SDK.Croe
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("上传好友图片").ToString());
             UploadImage sendmsg = (UploadImage)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(UploadImage));
             string ret = Marshal.PtrToStringAnsi(sendmsg(friendQQ, picture, picture.Length));
+            sendmsg = null;
+            return ret;
+        }
+        /// <summary>
+        /// 上传头像
+        /// </summary>
+        /// <param name="picpath"></param>
+        /// <returns>返回值 1:图片有误 2:上传失败 0:上传成功 3:链接服务器失败 4:请求失败</returns>
+        public int UploadAvatar_(string picpath)
+        {
+            Bitmap bitmap = new Bitmap(picpath);
+            byte[] picture = GetByteArrayByImage(bitmap);
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("上传头像").ToString());
+            UploadAvatar sendmsg = (UploadAvatar)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(UploadAvatar));
+            int ret = sendmsg(picture, picture.Length);
             sendmsg = null;
             return ret;
         }
