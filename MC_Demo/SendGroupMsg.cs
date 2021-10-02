@@ -14,6 +14,7 @@ namespace MC_Demo
     {
         public int GroupMsgComply(GroupMsg e)
         {
+            Common.MC_API.GetGroupInfo_JL_(e.FromGroup);
             Common.MC_API.SendGroupMsg_(e.FromGroup, "鹦鹉学舌：" + e.Msg, e.FromQQ);
             string imageurl = Common.MC_API.UploadGroupImage(e.FromGroup, Common.MC_API.Get_PluginDataDirectory()+ "MS.png");
             Common.MC_API.SendGroupMsg_(e.FromGroup, "群图片地址：" + imageurl, e.FromQQ);
