@@ -116,6 +116,8 @@ namespace MC_SDK.Croe
         delegate bool UploadGraffiti(IntPtr list, float penSize, int picWidth, int picHeight, [MarshalAs(UnmanagedType.LPStr)] ref string retHash, [MarshalAs(UnmanagedType.LPStr)] ref string returl);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void TXT2Audio(string txt, ref IntPtr ptr);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void TXT2Audio1(string txt, ref Struct_EArray_byte[] ptr);
         /// <summary>
         /// 输出日志
         /// </summary>
@@ -732,6 +734,37 @@ namespace MC_SDK.Croe
             Array.Resize(ref ret.bytes, ret.count);
             sendmsg = null;
             return ret.bytes;
+        }
+        /// <summary>
+        /// 文本转语音（研究用）
+        /// </summary>
+        /// <param name="txt"></param>
+        /// <returns></returns>
+        private byte[] TXT2Audio1_(string txt)
+        {
+            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Struct_EArray_byte)));
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("文本转语音").ToString());
+            TXT2Audio sendmsg = (TXT2Audio)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(TXT2Audio));
+            sendmsg(txt, ref ptr);
+            Struct_EArray_byte ret = (Struct_EArray_byte)Marshal.PtrToStructure(ptr, typeof(Struct_EArray_byte));
+            Array.Resize(ref ret.bytes, ret.count);
+            sendmsg = null;
+            return ret.bytes;
+        }
+        /// <summary>
+        /// 文本转语音（研究用）
+        /// </summary>
+        /// <param name="txt"></param>
+        /// <returns></returns>
+        private byte[] TXT2Audio2_(string txt)
+        {
+            Struct_EArray_byte[] ptr = new Struct_EArray_byte[1];
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("文本转语音").ToString());
+            TXT2Audio1 sendmsg = (TXT2Audio1)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(TXT2Audio1));
+            sendmsg(txt, ref ptr);
+            Array.Resize(ref ptr[0].bytes, ptr[0].count);
+            sendmsg = null;
+            return ptr[0].bytes;
         }
         /// <summary>
         /// 设置在线状态
