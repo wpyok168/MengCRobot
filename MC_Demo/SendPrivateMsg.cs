@@ -14,6 +14,7 @@ namespace MC_Demo
     {
         public int PrivateMsgComply(PrivateMsg e)
         {
+            //Common.MC_API.GetChannelMemberQQinfo_(6664221659415426);
             //Common.MC_API.GetPskey_();
             Common.MC_API.TXT2Audio_("你好");
             Common.MC_API.SendPrivateMsg_(e.FromQQ, "鹦鹉学舌：" + e.Msg);
