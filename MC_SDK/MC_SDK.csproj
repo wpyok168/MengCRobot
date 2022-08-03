@@ -73,12 +73,14 @@
     <Compile Include="Interface\IEnable.cs" />
     <Compile Include="Interface\IEventMsg.cs" />
     <Compile Include="Interface\IGroupMsg.cs" />
+    <Compile Include="Interface\IGuildMsg.cs" />
     <Compile Include="Interface\IPrivateMsg.cs" />
     <Compile Include="Interface\ISetting.cs" />
     <Compile Include="Interface\IUninit.cs" />
     <Compile Include="Mode\EventMsg.cs" />
     <Compile Include="Mode\FriendInfo.cs" />
     <Compile Include="Mode\GroupMsg.cs" />
+    <Compile Include="Mode\GuildMsg.cs" />
     <Compile Include="Mode\PrivateMsg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Struct\Struct_BatchDel_MemberQQ.cs" />

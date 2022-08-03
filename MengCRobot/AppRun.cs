@@ -258,5 +258,37 @@ namespace MengCRobot
             }
             return (int)EventProcessEnum.消息处理_忽略;
         }
+        [DllExport(CallingConvention = System.Runtime.InteropServices.CallingConvention.StdCall)]
+        public static int onGuildMsg(long QQID, int type, int subtype, long fromUin, long fromGuild, long fromChannel, long fromRecvTime, long fromReq, [MarshalAs(UnmanagedType.LPStr)] string guildName, [MarshalAs(UnmanagedType.LPStr)] string channelName, [MarshalAs(UnmanagedType.LPStr)] string groupName, [MarshalAs(UnmanagedType.LPStr)] string fromCard, [MarshalAs(UnmanagedType.LPStr)] string message_conten)
+        {
+            try
+            {
+                if (Common.unityContainer.IsRegistered<IGuildMsg>())
+                {
+                    GuildMsg e = new GuildMsg()
+                    {
+                        QQID = QQID, 
+                        Type= type,
+                        Subtype = subtype,
+                        FromUin = fromUin,
+                        FromGuild = fromGuild,
+                        FromChannel = fromChannel,
+                        FromRecvTime = fromRecvTime,
+                        FromReq = fromReq,
+                        GuildName = guildName,
+                        ChannelName = channelName, 
+                        GroupName = groupName,
+                        FromCard = fromCard,
+                        Msg= message_conten
+                    };
+                    return Common.unityContainer.Resolve<IGuildMsg>().GuildMsgComply(e);
+                }
+            }
+            catch (Exception ex)
+            {
+                Common.BugLog(ex.Message);
+            }
+            return (int)EventProcessEnum.消息处理_忽略;
+        }
     }
 }

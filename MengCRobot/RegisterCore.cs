@@ -1,10 +1,5 @@
 ﻿using MC_Demo;
 using MC_SDK.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity;
 
 namespace MengCRobot
@@ -20,6 +15,7 @@ namespace MengCRobot
             //unityContainer.RegisterType<IEventMsg, RobotEventcallBack>();
             //unityContainer.RegisterType<IDisable, RobotDisable>();
             //unityContainer.RegisterType<IUninit, RobotUninit>();
+            //unityContainer.RegisterType<IGuildMsg, SendGuildMsg>();
         }
     }
 }
