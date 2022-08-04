@@ -23,4 +23,13 @@ namespace MC_SDK.Struct
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024*10)]
         public byte[] bytes;
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Struct_EArray_long
+    {
+        public int index;//数组索引
+        public int count;//数组元素数量
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024*10)]
+        public long[] ldata;
+    }
 }

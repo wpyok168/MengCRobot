@@ -15,7 +15,7 @@ namespace MengCRobot
             //unityContainer.RegisterType<IEventMsg, RobotEventcallBack>();
             //unityContainer.RegisterType<IDisable, RobotDisable>();
             //unityContainer.RegisterType<IUninit, RobotUninit>();
-            //unityContainer.RegisterType<IGuildMsg, SendGuildMsg>();
+            unityContainer.RegisterType<IGuildMsg, SendGuildMsg>();
         }
     }
 }

@@ -32,7 +32,7 @@ namespace MC_SDK.Croe
         {
             return app_PluginDataDirectory;
         }
-        #region
+        #region 委托 QQ API
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate IntPtr OutputLog([MarshalAs(UnmanagedType.LPStr)] string message);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -133,9 +133,9 @@ namespace MC_SDK.Croe
         delegate IntPtr GetGroupVideoAddr(long GroupQQ, long QQ, [MarshalAs(UnmanagedType.LPStr)] string param, [MarshalAs(UnmanagedType.LPStr)] string hash1);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate int GetLaveAtCount(long GroupQQ);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate IntPtr SendChannelMsg(long channelID, long chatroomID, [MarshalAs(UnmanagedType.LPStr)] string msg, long otherQQ);
+        #endregion
 
+        #region 频道API
         ///频道
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate IntPtr UploadChannelImage(long channelID, long chatroomID, byte[] pic, int length);
@@ -150,7 +150,19 @@ namespace MC_SDK.Croe
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate bool GetOtherChannelInfo(long tiny_id, ref Struct_Guild_Tinyid_Info_E[] data);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate bool GetSonChannelInfo(long tiny_id, ref Struct_guild_channel_info_E[] data);
+        delegate bool GetSonChannelInfo(long channelID, ref Struct_EArray[] eArray);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool GetChannelLiveRoomInfo(long roomId, ref Struct_Guild_Room_Info_EPD[] ptrs);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool GetChannelLiveRoomInfo1(long channelID, long roomId, ref Struct_Guild_Room_Info_EPD[] ptrs);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate IntPtr SendChannelMsg(long channelID, long chatroomID, [MarshalAs(UnmanagedType.LPStr)] string msg, long otherQQ);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void CullGuildMember(long channelID, long memberID, bool isblack);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool GetGuild_Live_Info(long roomId, [MarshalAs(UnmanagedType.LPStr)] string unkown1,ref Struct_Guild_Live_Info_E[] data);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool GetGuidlist(ref Struct_EArray[] eArray);
         #endregion
 
         /// <summary>
@@ -1658,19 +1670,135 @@ namespace MC_SDK.Croe
         }
 
         /// <summary>
+        /// 踢出频道成员
+        /// </summary>
+        /// <param name="channelID">频道ID</param>
+        /// <param name="memberID">成员ID</param>
+        /// <param name="isblack">是否拉黑</param>
+        public void CullGuildMember_(long channelID,long memberID, bool isblack = false)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("踢出频道成员").ToString());
+            CullGuildMember sendmsg = (CullGuildMember)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(CullGuildMember));
+            sendmsg(channelID, memberID, isblack);
+            sendmsg = null;
+        }
+
+        /// <summary>
+        /// 获取频道直播间信息
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
+        public Struct_Guild_Room_Info GetChannelLiveRoomInfo_(long roomId)
+        {
+            Struct_Guild_Room_Info_EPD[] epds = new Struct_Guild_Room_Info_EPD[1];
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("获取频道直播间信息").ToString());
+            GetChannelLiveRoomInfo sendmsg = (GetChannelLiveRoomInfo)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(GetChannelLiveRoomInfo));
+            bool ret =sendmsg(roomId, ref epds);
+            Struct_EArray_long sel = Marshal.PtrToStructure<Struct_EArray_long>(epds[0].struct_Guild_Room_Info_E.qq_list);
+            Array.Resize(ref sel.ldata, sel.count);
+            Struct_Guild_Room_Info gmi = new Struct_Guild_Room_Info() { fromCard = epds[0].struct_Guild_Room_Info_E.fromCard, name = epds[0].struct_Guild_Room_Info_E.name, roomid= epds[0].struct_Guild_Room_Info_E.roomid, rtmp= epds[0].struct_Guild_Room_Info_E.rtmp, tinyid= epds[0].struct_Guild_Room_Info_E.tinyid, unkown1= epds[0].struct_Guild_Room_Info_E.unkown1, qq_list= sel.ldata };
+            sendmsg = null;
+            return gmi;
+        }
+
+        /// <summary>
+        /// 获取频道直播间信息2
+        /// </summary>
+        /// <param name="channelID">频道ID</param>
+        /// <param name="roomId">子频道ID</param>
+        /// <returns></returns>
+        public Struct_Guild_Room_Info GetChannelLiveRoomInfo_2(long channelID, long roomId)
+        {
+            Struct_Guild_Room_Info_EPD[] epds = new Struct_Guild_Room_Info_EPD[1];
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("获取频道直播间信息2").ToString());
+            GetChannelLiveRoomInfo1 sendmsg = (GetChannelLiveRoomInfo1)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(GetChannelLiveRoomInfo1));
+            bool ret = sendmsg(channelID, roomId, ref epds);
+            Struct_EArray_long sel = Marshal.PtrToStructure<Struct_EArray_long>(epds[0].struct_Guild_Room_Info_E.qq_list);
+            Array.Resize(ref sel.ldata, sel.count);
+            Struct_Guild_Room_Info gmi = new Struct_Guild_Room_Info() { fromCard = epds[0].struct_Guild_Room_Info_E.fromCard, name = epds[0].struct_Guild_Room_Info_E.name, roomid = epds[0].struct_Guild_Room_Info_E.roomid, rtmp = epds[0].struct_Guild_Room_Info_E.rtmp, tinyid = epds[0].struct_Guild_Room_Info_E.tinyid, unkown1 = epds[0].struct_Guild_Room_Info_E.unkown1, qq_list = sel.ldata };
+            sendmsg = null;
+            return gmi;
+        }
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool GetGuild_Live_Info1(long roomId, [MarshalAs(UnmanagedType.LPStr)] string unkown1, ref IntPtr[] data);
+
+        /// <summary>
+        /// 获取频道直播信息
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <param name="unkown1"></param>
+        /// <returns></returns>
+        public Struct_Guild_Live_Info GetGuild_Live_Info_(long roomId, string unkown1)
+        {
+            Struct_Guild_Live_Info_E[] gli = new Struct_Guild_Live_Info_E[1];
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("获取频道直播信息").ToString());
+            GetGuild_Live_Info sendmsg = (GetGuild_Live_Info)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(GetGuild_Live_Info));
+            bool ret =sendmsg(roomId,unkown1,ref gli);
+            Struct_Guild_Live_Info sgli = gli[0].struct_Guild_Live_Info;
+            sendmsg = null;
+            return sgli;
+        }
+
+        /// <summary>
         /// 获取子频道列表
         /// </summary>
         /// <param name="tiny_id"></param>
         /// <returns></returns>
-        public Struct_guild_channel_info GetSonChannelInfo_(long tiny_id)
+        public List<Struct_guild_channel_info> GetSonChannelInfo_(long channelID)
         {
-            Struct_guild_channel_info_E[] info = new Struct_guild_channel_info_E[1];
-            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("获取子频道列表").ToString());
+            Struct_EArray[] eArray = new Struct_EArray[1];
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("获取所有子频道").ToString());
             GetSonChannelInfo sendmsg = (GetSonChannelInfo)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(GetSonChannelInfo));
-            bool ret = sendmsg(tiny_id, ref info);
-            Struct_guild_channel_info gti = info[0].info;
+            bool ret = sendmsg(channelID, ref eArray);
+            Array.Resize(ref eArray[0].ptrs, eArray[0].count);
+            List<Struct_guild_channel_info> list = new List<Struct_guild_channel_info>();
+            foreach (var item in eArray[0].ptrs)
+            {
+                Struct_guild_channel_info sgci = Marshal.PtrToStructure<Struct_guild_channel_info>(item);
+                list.Add(sgci);
+            }
             sendmsg = null;
-            return gti;
+            return list;
+        }
+
+        /// <summary>
+        /// 取频道列表
+        /// </summary>
+        /// <returns></returns>
+        public List<Struct_Guild_info> GetGuidlist_()
+        {
+            Struct_EArray[] eArray = new Struct_EArray[1];
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("取频道列表").ToString());
+            GetGuidlist sendmsg = (GetGuidlist)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(GetGuidlist));
+            bool ret = sendmsg(ref eArray);
+            Array.Resize(ref eArray[0].ptrs, eArray[0].count);
+            List<Struct_Guild_info> list = new List<Struct_Guild_info>();
+            foreach (var item in eArray[0].ptrs)
+            {
+                Struct_Guild_info_E gie = Marshal.PtrToStructure<Struct_Guild_info_E>(item);
+                Struct_Guild_info temp = new Struct_Guild_info() {
+                    guildId=gie.guildId, 
+                    createTime=gie.createTime, 
+                    description=gie.description, 
+                    guildName=gie.guildName, 
+                    joinTime=gie.joinTime, 
+                    num=gie.num, 
+                    url=gie.url
+                };
+                Struct_EArray eArray1 = Marshal.PtrToStructure<Struct_EArray>(gie.channelList);
+                Array.Resize(ref eArray1.ptrs, eArray1.count);
+                List<Struct_guild_channel_info> list1 = new List<Struct_guild_channel_info>();
+                foreach (var item2 in eArray1.ptrs)
+                {
+                    Struct_guild_channel_info sgci = Marshal.PtrToStructure<Struct_guild_channel_info>(item2);
+                    list1.Add(sgci);
+                }
+                temp.channelList = list1;
+                list.Add(temp);
+            }
+            sendmsg = null;
+            return list;
         }
         #endregion
     }

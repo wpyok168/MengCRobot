@@ -92,7 +92,9 @@
     <Compile Include="Struct\Struct_Group_Msg.cs" />
     <Compile Include="Struct\Struct_guild_channel_info.cs" />
     <Compile Include="Struct\Struct_Guild_Identity.cs" />
+    <Compile Include="Struct\Struct_Guild_Live_Info.cs" />
     <Compile Include="Struct\Struct_Guild_Member.cs" />
+    <Compile Include="Struct\Struct_Guild_Room_Info.cs" />
     <Compile Include="Struct\Struct_Guild_Tinyid_Info.cs" />
     <Compile Include="Struct\Struct_Other_Msg.cs" />
     <Compile Include="Struct\Struct_Pskey.cs" />
