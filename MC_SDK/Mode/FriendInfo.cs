@@ -25,6 +25,7 @@ namespace MC_SDK.Mode
         public SexEnum 性别; //整数型; //; //; //255隐藏 0男 1女
         public int Q等级; //整数型
         public int 年龄; //整数型
+        public string 生日; //文本型
         public string 国家; //文本型
         public string 省份; //文本型
         public string 城市; //文本型
@@ -56,6 +57,7 @@ namespace MC_SDK.Mode
         public SexEnum 性别; //整数型; //; //; //255隐藏 0男 1女
         public int Q等级; //整数型
         public int 年龄; //整数型
+        public string 生日; //文本型
         public string 国家; //文本型
         public string 省份; //文本型
         public string 城市; //文本型

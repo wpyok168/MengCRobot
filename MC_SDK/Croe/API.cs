@@ -468,6 +468,7 @@ namespace MC_SDK.Croe
                     QQ达人 = fie.QQ达人,
                     所属 = fie.所属,
                     昵称 = fie.昵称,
+                    生日= fie.生日,
                     年龄 = fie.年龄,
                     备注 = fie.备注,
                     城市 = fie.城市,
