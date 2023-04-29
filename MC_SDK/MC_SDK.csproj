@@ -57,6 +57,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Croe\API.cs" />
     <Compile Include="Croe\GetPtr.cs" />
+    <Compile Include="Croe\SilkHelp.cs" />
     <Compile Include="Croe\TextFormat.cs" />
     <Compile Include="Enum\AuthorityEnum.cs" />
     <Compile Include="Enum\EventProcessEnum.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Struct\Struct_Guild_Identity.cs" />
     <Compile Include="Struct\Struct_Guild_Live_Info.cs" />
     <Compile Include="Struct\Struct_Guild_Member.cs" />
+    <Compile Include="Struct\Struct_guild_private_info.cs" />
     <Compile Include="Struct\Struct_Guild_Room_Info.cs" />
     <Compile Include="Struct\Struct_Guild_Tinyid_Info.cs" />
     <Compile Include="Struct\Struct_Other_Msg.cs" />

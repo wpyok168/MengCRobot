@@ -10,7 +10,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MC_SDK.Croe
 {
@@ -80,7 +82,7 @@ namespace MC_SDK.Croe
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate bool SlectFriendInfo(long otherQQ, ref FriendInfo_PA[] fda);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate IntPtr Audio2TXT([MarshalAs(UnmanagedType.LPStr)] string audiohash, string token, int waittime);
+        delegate IntPtr Audio2TXT([MarshalAs(UnmanagedType.LPStr)] string audiohash, [MarshalAs(UnmanagedType.LPStr)] string token, int waittime);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void SetOlineStatus(int type, int subtype, int power);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -120,6 +122,8 @@ namespace MC_SDK.Croe
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void TXT2Audio1(string txt, ref Struct_EArray_byte[] ptr);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate IntPtr GetAudioDownAddr([MarshalAs(UnmanagedType.LPStr)] string token);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate bool BatchDelMemberQQ(long GroupQQ, IntPtr ptr);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void GroupSignin([MarshalAs(UnmanagedType.LPStr)] string template_id, [MarshalAs(UnmanagedType.LPStr)] string lot, [MarshalAs(UnmanagedType.LPStr)] string lat, [MarshalAs(UnmanagedType.LPStr)] string poi, [MarshalAs(UnmanagedType.LPArray)] byte[] pic, int length, int pic_id, [MarshalAs(UnmanagedType.LPStr)] string text);
@@ -133,6 +137,9 @@ namespace MC_SDK.Croe
         delegate IntPtr GetGroupVideoAddr(long GroupQQ, long QQ, [MarshalAs(UnmanagedType.LPStr)] string param, [MarshalAs(UnmanagedType.LPStr)] string hash1);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate int GetLaveAtCount(long GroupQQ);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate IntPtr SecretApi(int v0, long v1, long v2, long v3, int v4, int v5, int v6, [MarshalAs(UnmanagedType.LPStr)]string v7, [MarshalAs(UnmanagedType.LPStr)]string v8, [MarshalAs(UnmanagedType.LPStr)]string v9);
+
         #endregion
 
         #region 频道API
@@ -163,6 +170,13 @@ namespace MC_SDK.Croe
         delegate bool GetGuild_Live_Info(long roomId, [MarshalAs(UnmanagedType.LPStr)] string unkown1,ref Struct_Guild_Live_Info_E[] data);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate bool GetGuidlist(ref Struct_EArray[] eArray);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool GetChirldGuidlist(long channelID, long chirldID, ref Struct_EArray[] eArray);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool CreateGuidPrivateInfo(long channelID, long tinyid, ref Struct_guild_private_info_E[] eArray);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void GetGuidPush(long channelID);
+
         #endregion
 
         /// <summary>
@@ -171,7 +185,6 @@ namespace MC_SDK.Croe
         /// <param name="message"></param>
         /// <returns></returns>
         public string OutLog(string message)
-
         {
             string ret = string.Empty;
             int privateMsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("输出日志").ToString());
@@ -319,7 +332,7 @@ namespace MC_SDK.Croe
         /// </summary>
         /// <param name="QQ"></param>
         /// <returns></returns>
-        public string OutLog(long QQ)
+        public string DelFriend(long QQ)
 
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("删除好友").ToString());
@@ -335,10 +348,26 @@ namespace MC_SDK.Croe
         /// <param name="GroupQQ"></param>
         /// <param name="jsonstr"></param>
         /// <returns>成功返回的time用于撤回消息</returns>
-        public string SendJson_(long GroupQQ, string jsonstr)
+        public string SendFriendJson_(long FriendQQ, string jsonstr)
 
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送好友json消息").ToString());
+            SendPrivateMsg sendmsg = (SendPrivateMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendPrivateMsg));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(FriendQQ, jsonstr));
+            sendmsg = null;
+            return ret;
+        }
+
+        /// <summary>
+        /// 发送群json消息
+        /// </summary>
+        /// <param name="GroupQQ"></param>
+        /// <param name="jsonstr"></param>
+        /// <returns>成功返回的time用于撤回消息</returns>
+        public string SendGroupJson_(long GroupQQ, string jsonstr)
+
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送群json消息").ToString());
             SendPrivateMsg sendmsg = (SendPrivateMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendPrivateMsg));
             string ret = Marshal.PtrToStringAnsi(sendmsg(GroupQQ, jsonstr));
             sendmsg = null;
@@ -892,6 +921,20 @@ namespace MC_SDK.Croe
             Array.Resize(ref ptr[0].bytes, ptr[0].count);
             sendmsg = null;
             return ptr[0].bytes;
+        }
+
+        /// <summary>
+        /// 取语音下载地址
+        /// </summary>
+        /// <param name="token">根据token取语音下载地址</param>
+        /// <returns>失败返回空</returns>
+        public string GetAudioDownAddr_(string token)
+        {
+            string ret = string.Empty;
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("取语音下载地址").ToString());
+            GetAudioDownAddr sendmsg = (GetAudioDownAddr)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(GetAudioDownAddr));
+            ret = Marshal.PtrToStringAnsi(sendmsg(token));
+            return ret;
         }
 
         /// <summary>
@@ -1801,6 +1844,147 @@ namespace MC_SDK.Croe
             sendmsg = null;
             return list;
         }
+
+        /// <summary>
+        /// 查询子频道浏览列表
+        /// </summary>
+        /// <param name="channelID">频道id</param>
+        /// <param name="chirldID">子频道id</param>
+        /// <returns></returns>
+        public List<Struct_guild_member_info> GetChirldGuidlist_(long channelID, long chirldID)
+        {
+            Struct_EArray[] eArray = new Struct_EArray[1];
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("查询子频道浏览列表").ToString());
+            GetChirldGuidlist sendmsg = (GetChirldGuidlist)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(GetChirldGuidlist));
+            bool ret = sendmsg(channelID,chirldID,ref eArray);
+            Array.Resize(ref eArray[0].ptrs, eArray[0].count);
+            List<Struct_guild_member_info> list = new List<Struct_guild_member_info>();
+            foreach (var item in eArray[0].ptrs)
+            {
+                Struct_guild_member_info gie = Marshal.PtrToStructure<Struct_guild_member_info>(item);
+                list.Add(gie);
+            }
+            sendmsg = null;
+            return list;
+        }
+
+
+
+        /// <summary>
+        /// 创建频道私信对象
+        /// </summary>
+        /// <param name="channelID"></param>
+        /// <param name="tinyid"></param>
+        /// <returns></returns>
+        public Struct_guild_private_info CreateGuidPrivateInfo_(long channelID, long tinyid)
+        {
+            Struct_guild_private_info_E[] eArray = new Struct_guild_private_info_E[1];
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("创建频道私信对象").ToString());
+            CreateGuidPrivateInfo sendmsg = (CreateGuidPrivateInfo)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(CreateGuidPrivateInfo));
+            bool ret = sendmsg(channelID, tinyid, ref eArray);
+            sendmsg = null;
+            return eArray[0].sgpi_E;
+        }
+
+        /// <summary>
+        /// 获取频道推送<para>人数多的频道（大约5000人以上）需要手动调用api，以接收对应频道消息</para>
+        /// </summary>
+        /// <param name="channelID"></param>
+        public void GetGuidPush_(long channelID)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("获取频道推送").ToString());
+            GetGuidPush sendmsg = (GetGuidPush)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(GetGuidPush));
+            sendmsg(channelID);
+            sendmsg = null;
+        }
+
+        /// <summary>
+        /// SecretApi
+        /// </summary>
+        /// <param name="v0"></param>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <param name="v3"></param>
+        /// <param name="v4"></param>
+        /// <param name="v5"></param>
+        /// <param name="v6"></param>
+        /// <param name="v7"></param>
+        /// <param name="v8"></param>
+        /// <param name="v9"></param>
+        /// <returns></returns>
+        public string SecretApi_(int v0, long v1, long v2, long v3, int v4, int v5, int v6, string v7, string v8, string v9)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("SecretApi").ToString());
+            SecretApi sendmsg = (SecretApi)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SecretApi));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9));
+            sendmsg = null;
+            return ret;
+        }
+
+        /// <summary>
+        /// 提取图片文字
+        /// </summary>
+        /// <param name="url">文本_取出中间文本(msg, "url=", "]")</param>
+        /// <param name="md5">文本_取出中间文本(msg, "hash=", ",")</param>
+        /// <returns></returns>
+        public string Extract_Image_text(string url ,string md5)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("提取图片文字").ToString());
+            AddGroup sendmsg = (AddGroup)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(AddGroup));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(url, md5));
+            sendmsg = null;
+            return ret;
+        }
+
+        /// <summary>
+        /// 上传动态头像
+        /// </summary>
+        /// <param name="picpath"></param>
+        /// <returns></returns>
+        public string Upload_Dynamic_Avatar(string picpath)
+        {
+            string ret = string.Empty;
+            int privateMsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("上传动态头像").ToString());
+            IntPtr intPtr = new IntPtr(privateMsgAddress);
+            OutputLog outputLog = (OutputLog)Marshal.GetDelegateForFunctionPointer(intPtr, typeof(OutputLog));
+            ret = Marshal.PtrToStringAnsi(outputLog(picpath));
+            outputLog = null;
+            return ret;
+        }
+
+        #region  Silk编码、解码
+        /// <summary>
+        /// Silk解码
+        /// </summary>
+        /// <param name="audio_path">音频文件路径<para>注意文件后缀必须和文件格式相对应</para></param>
+        /// <returns>返回null 可能是corn文件夹缺少语音转码库，请自行到官网或交流群下载</returns>
+        public byte[] SilkDecoding(string audio_path)
+        {
+            SilkHelp silkHelp = new SilkHelp();
+            return silkHelp.SilkDecoding(audio_path);
+        }
+        /// <summary>
+        /// Silk编码
+        /// </summary>
+        /// <param name="audio_path">音频文件路径<para>注意文件后缀必须和文件格式相对应</para></param>
+        /// <returns>返回null 可能是corn文件夹缺少语音转码库，请自行到官网或交流群下载</returns>
+        public byte[] SilkEncoding(string audio_path)
+        {
+            SilkHelp silkHelp = new SilkHelp();
+            return silkHelp.SilkEncoding(audio_path);
+        }
+        /// <summary>
+        /// arm编码
+        /// </summary>
+        /// <param name="audio_path">音频文件路径<para>注意文件后缀必须和文件格式相对应</para></param>
+        /// <returns>返回null 可能是corn文件夹缺少语音转码库，请自行到官网或交流群下载</returns>
+        public byte[] ArmEncoding(string audio_path)
+        {
+            SilkHelp silkHelp = new SilkHelp();
+            return silkHelp.AmrEncoding(audio_path);
+        }
+        #endregion
+
         #endregion
     }
 }
