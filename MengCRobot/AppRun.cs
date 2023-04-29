@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Unity;
+using Autofac;
 
 namespace MengCRobot
 {
@@ -23,8 +23,10 @@ namespace MengCRobot
         [DllExport(CallingConvention = System.Runtime.InteropServices.CallingConvention.StdCall)]
         public static void Init(int pName, int pDesc, [MarshalAs(UnmanagedType.LPStr)]string apidata)
         {
-            Common.unityContainer = new UnityContainer();
-            RegisterCore.Register(Common.unityContainer);
+            Common.CBuilder = new Autofac.ContainerBuilder();
+            RegisterCore.Register(Common.CBuilder);
+            Common.Container = Common.CBuilder.Build();
+
             string path = System.Environment.CurrentDirectory + "\\插件数据\\" + AppInfo.app_name;
             if (!Directory.Exists(path))
             {
@@ -46,9 +48,9 @@ namespace MengCRobot
         {
             try
             {
-                if (Common.unityContainer.IsRegistered<IUninit>())
+                if (Common.Container.IsRegistered<IUninit>())
                 {
-                    Common.unityContainer.Resolve<IUninit>().UninitComply();
+                    Common.Container.Resolve<IUninit>().UninitComply();
                 }
             }
             catch (Exception ex)
@@ -64,9 +66,9 @@ namespace MengCRobot
         {
             try
             {
-                if (Common.unityContainer.IsRegistered<ISetting>())
+                if (Common.Container.IsRegistered<ISetting>())
                 {
-                    Common.unityContainer.Resolve<ISetting>().SettingComply();
+                    Common.Container.Resolve<ISetting>().SettingComply();
                 }
             }
             catch (Exception ex)
@@ -82,9 +84,9 @@ namespace MengCRobot
         {
             try
             {
-                if (Common.unityContainer.IsRegistered<IEnable>())
+                if (Common.Container.IsRegistered<IEnable>())
                 {
-                    Common.unityContainer.Resolve<IEnable>().EnableComply();
+                    Common.Container.Resolve<IEnable>().EnableComply();
                 }
             }
             catch (Exception ex)
@@ -100,9 +102,9 @@ namespace MengCRobot
         {
             try
             {
-                if (Common.unityContainer.IsRegistered<IDisable>())
+                if (Common.Container.IsRegistered<IDisable>())
                 {
-                    Common.unityContainer.Resolve<IDisable>().DisableComply();
+                    Common.Container.Resolve<IDisable>().DisableComply();
                 }
             }
             catch (Exception ex)
@@ -131,7 +133,7 @@ namespace MengCRobot
         {
             try
             {
-                if (Common.unityContainer.IsRegistered<IPrivateMsg>())
+                if (Common.Container.IsRegistered<IPrivateMsg>())
                 {
                     PrivateMsg e = new PrivateMsg()
                     {
@@ -148,7 +150,7 @@ namespace MengCRobot
                         Chattoken = chattoken,
                         Msg = msg
                     };
-                    return Common.unityContainer.Resolve<IPrivateMsg>().PrivateMsgComply(e);
+                    return Common.Container.Resolve<IPrivateMsg>().PrivateMsgComply(e);
                 }
             }
             catch (Exception ex)
@@ -177,7 +179,7 @@ namespace MengCRobot
         {
             try
             {
-                if (Common.unityContainer.IsRegistered<IGroupMsg>())
+                if (Common.Container.IsRegistered<IGroupMsg>())
                 {
                     GroupMsg e = new GroupMsg()
                     {
@@ -193,7 +195,7 @@ namespace MengCRobot
                         FromGroupName = fromGroupName,
                         Msg = msg
                     };
-                    return Common.unityContainer.Resolve<IGroupMsg>().GroupMsgComply(e);
+                    return Common.Container.Resolve<IGroupMsg>().GroupMsgComply(e);
                 }
             }
             catch (Exception ex)
@@ -228,7 +230,7 @@ namespace MengCRobot
         {
             try
             {
-                if (Common.unityContainer.IsRegistered<IEventMsg>())
+                if (Common.Container.IsRegistered<IEventMsg>())
                 {
                     EventMsg e = new EventMsg()
                     {
@@ -249,7 +251,7 @@ namespace MengCRobot
                         FromEventNick = fromEventNick,
                         Message_content = message_content
                     };
-                    return Common.unityContainer.Resolve<IEventMsg>().EventMsgComply(e);
+                    return Common.Container.Resolve<IEventMsg>().EventMsgComply(e);
                 }
             }
             catch (Exception ex)
@@ -263,7 +265,7 @@ namespace MengCRobot
         {
             try
             {
-                if (Common.unityContainer.IsRegistered<IGuildMsg>())
+                if (Common.Container.IsRegistered<IGuildMsg>())
                 {
                     GuildMsg e = new GuildMsg()
                     {
@@ -281,7 +283,7 @@ namespace MengCRobot
                         FromCard = fromCard,
                         Msg= message_conten
                     };
-                    return Common.unityContainer.Resolve<IGuildMsg>().GuildMsgComply(e);
+                    return Common.Container.Resolve<IGuildMsg>().GuildMsgComply(e);
                 }
             }
             catch (Exception ex)

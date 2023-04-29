@@ -5,7 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unity;
+using Autofac;
+using Autofac.Builder;
 
 namespace MC_SDK
 {
@@ -14,7 +15,8 @@ namespace MC_SDK
         /// <summary>
         /// 依赖注入
         /// </summary>
-        public static IUnityContainer unityContainer;
+        public static Autofac.IContainer Container { get; set; }
+        public static Autofac.ContainerBuilder CBuilder { get; set; }
         /// <summary>
         /// 萌尘API 
         /// </summary>

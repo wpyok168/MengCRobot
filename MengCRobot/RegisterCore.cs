@@ -1,21 +1,21 @@
 ﻿using MC_Demo;
 using MC_SDK.Interface;
-using Unity;
+using Autofac;
 
 namespace MengCRobot
 {
     public static class RegisterCore
     {
-        public static void Register(IUnityContainer unityContainer)
+        public static void Register(ContainerBuilder containerBuilder)
         {
-            //unityContainer.RegisterType<IEnable, AppEnable>();
-            unityContainer.RegisterType<IPrivateMsg, SendPrivateMsg>();
-            unityContainer.RegisterType<IGroupMsg, SendGroupMsg>();
-            //unityContainer.RegisterType<ISetting, OpenRobotMenu>();
-            //unityContainer.RegisterType<IEventMsg, RobotEventcallBack>();
-            //unityContainer.RegisterType<IDisable, RobotDisable>();
-            //unityContainer.RegisterType<IUninit, RobotUninit>();
-            unityContainer.RegisterType<IGuildMsg, SendGuildMsg>();
+            //containerBuilder.RegisterType<AppEnable>().As<IEnable>();
+            containerBuilder.RegisterType<SendPrivateMsg>().As< IPrivateMsg>();
+            containerBuilder.RegisterType<SendGroupMsg>().As<IGroupMsg>();
+            //containerBuilder.RegisterType<OpenRobotMenu>().As<ISetting>();
+            //containerBuilder.RegisterType<RobotEventcallBack>().As<IEventMsg>();
+            //containerBuilder.RegisterType<RobotDisable>().As<IDisable>();
+            //containerBuilder.RegisterType<RobotUninit>().As<IUninit>();
+            containerBuilder.RegisterType<SendGuildMsg>().As<IGuildMsg>();
         }
     }
 }
