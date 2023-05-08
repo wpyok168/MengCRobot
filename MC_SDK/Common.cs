@@ -17,10 +17,12 @@ namespace MC_SDK
         /// </summary>
         public static Autofac.IContainer Container { get; set; }
         public static Autofac.ContainerBuilder CBuilder { get; set; }
+        public static API MC_API { get => mC_API;  }
+
         /// <summary>
         /// 萌尘API 
         /// </summary>
-        public static API MC_API = new API();
+        private static API mC_API = new API();
 
         /// <summary>
         /// 记录错误日志

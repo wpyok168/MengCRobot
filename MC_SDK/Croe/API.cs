@@ -418,6 +418,8 @@ namespace MC_SDK.Croe
             return ret;
         }
 
+        #region QQ key 
+
         /// <summary>
         /// 获取skey
         /// </summary>
@@ -460,6 +462,37 @@ namespace MC_SDK.Croe
             sendmsg = null;
             return ret;
         }
+
+        /// <summary>
+        /// QQ bkn
+        /// </summary>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public long GetBkn(string skey)
+        {
+            var hash = 5381;
+            for (int i = 0, len = skey.Length; i < len; ++i)
+            {
+                hash += (hash << 5) + (int)skey[i];
+            }
+            return hash & 2147483647;
+        }
+        /// <summary>
+        /// QQ g_tk
+        /// </summary>
+        /// <param name="sKey"></param>
+        /// <returns></returns>
+        public long GetG_TK(string sKey)
+        {
+            int hash = 5381;
+            for (int i = 0, len = sKey.Length; i < len; ++i)
+            {
+                hash += (hash << 5) + (int)sKey[i];
+            }
+            return (hash & 0x7fffffff);
+        }
+
+        #endregion
 
         /// <summary>
         /// 取框架QQ
