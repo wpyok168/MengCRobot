@@ -194,6 +194,16 @@ namespace MC_SDK.Croe
             outputLog = null;
             return ret;
         }
+        /// <summary>
+        /// 字符串转义
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        private string Covertstr(string msg)
+        {
+            string retstr = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(msg));
+            return retstr;
+        }
 
         /// <summary>
         /// 发送好友消息
@@ -206,7 +216,7 @@ namespace MC_SDK.Croe
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送好友消息").ToString());
             SendPrivateMsg sendmsg = (SendPrivateMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendPrivateMsg));
-            string ret = Marshal.PtrToStringAnsi(sendmsg(QQ, msg));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(QQ, Covertstr(msg)));
             sendmsg = null;
             return ret;
         }
@@ -223,7 +233,7 @@ namespace MC_SDK.Croe
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送群消息").ToString());
             SendGroupMsg sendmsg = (SendGroupMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendGroupMsg));
-            string ret = Marshal.PtrToStringAnsi(sendmsg(GroupQQ, msg, otherQQ));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(GroupQQ, Covertstr(msg), otherQQ));
             sendmsg = null;
             return ret;
         }
@@ -239,7 +249,7 @@ namespace MC_SDK.Croe
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送好友消息_纯文本").ToString());
             SendPrivateMsg sendmsg = (SendPrivateMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendPrivateMsg));
-            string ret = Marshal.PtrToStringAnsi(sendmsg(QQ, msg));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(QQ, Covertstr(msg)));
             sendmsg = null;
             return ret;
         }
@@ -256,7 +266,7 @@ namespace MC_SDK.Croe
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送群消息_纯文本").ToString());
             SendGroupMsg sendmsg = (SendGroupMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendGroupMsg));
-            string ret = Marshal.PtrToStringAnsi(sendmsg(GroupQQ, msg, otherQQ));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(GroupQQ, Covertstr(msg), otherQQ));
             sendmsg = null;
             return ret;
         }
@@ -273,7 +283,7 @@ namespace MC_SDK.Croe
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送群临时消息").ToString());
             SendGroupTempMsg sendmsg = (SendGroupTempMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendGroupTempMsg));
-            int ret = sendmsg(QQ, otherQQ, msg);
+            int ret = sendmsg(QQ, otherQQ, Covertstr(msg));
             sendmsg = null;
             return ret;
         }
@@ -290,7 +300,7 @@ namespace MC_SDK.Croe
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送咨询消息").ToString());
             SendConsultMsg sendmsg = (SendConsultMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendConsultMsg));
-            string ret = Marshal.PtrToStringAnsi(sendmsg(QQ, msg, chattoken));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(QQ, Covertstr(msg), chattoken));
             sendmsg = null;
             return ret;
         }
@@ -353,7 +363,7 @@ namespace MC_SDK.Croe
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送好友json消息").ToString());
             SendPrivateMsg sendmsg = (SendPrivateMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendPrivateMsg));
-            string ret = Marshal.PtrToStringAnsi(sendmsg(FriendQQ, jsonstr));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(FriendQQ, Covertstr(jsonstr)));
             sendmsg = null;
             return ret;
         }
@@ -369,7 +379,7 @@ namespace MC_SDK.Croe
         {
             int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("发送群json消息").ToString());
             SendPrivateMsg sendmsg = (SendPrivateMsg)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(SendPrivateMsg));
-            string ret = Marshal.PtrToStringAnsi(sendmsg(GroupQQ, jsonstr));
+            string ret = Marshal.PtrToStringAnsi(sendmsg(GroupQQ, Covertstr(jsonstr)));
             sendmsg = null;
             return ret;
         }
