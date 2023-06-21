@@ -139,7 +139,8 @@ namespace MC_SDK.Croe
         delegate int GetLaveAtCount(long GroupQQ);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate IntPtr SecretApi(int v0, long v1, long v2, long v3, int v4, int v5, int v6, [MarshalAs(UnmanagedType.LPStr)]string v7, [MarshalAs(UnmanagedType.LPStr)]string v8, [MarshalAs(UnmanagedType.LPStr)]string v9);
-
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool IsFriend(long otherQQ);
         #endregion
 
         #region 频道API
@@ -1992,6 +1993,15 @@ namespace MC_SDK.Croe
             OutputLog outputLog = (OutputLog)Marshal.GetDelegateForFunctionPointer(intPtr, typeof(OutputLog));
             ret = Marshal.PtrToStringAnsi(outputLog(picpath));
             outputLog = null;
+            return ret;
+        }
+
+        public bool IsFriend_(long otherQQ)
+        {
+            int MsgAddress = int.Parse(JObject.Parse(apidata).SelectToken("是否为好友").ToString());
+            IsFriend sendmsg = (IsFriend)Marshal.GetDelegateForFunctionPointer(new IntPtr(MsgAddress), typeof(IsFriend));
+            bool ret = sendmsg(otherQQ);
+            sendmsg = null;
             return ret;
         }
 
